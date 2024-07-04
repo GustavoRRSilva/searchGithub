@@ -3,19 +3,25 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import Search from "@/components/search/Search";
 import { UserProps } from "@/types/user";
+import User from "@/components/user/user";
 const inter = Inter({ subsets: ["latin"] });
-
+import Error from "@/components/Error/error";
 import { useState } from "react";
 
 export default function Home() {
   //User pode ser nullo ou ter o tipo de user props, iniciando em Nulo
   const [user, setUser] = useState<UserProps | null>(null);
-
+  const [error, setError] = useState(false);
   const loadUser = async (userName: string) => {
+    setError(false);
+    setUser(null)
     const res = await fetch(`https://api.github.com/users/${userName}`);
     const data = await res.json();
-    console.log(data);
-
+    if (res.status === 404) {
+      setError(true);
+      return;
+    }
+   
     //Pegando somente as informações listadas no type
     const { avatar_url, login, location, followers, following } = data;
     const userData: UserProps = {
@@ -40,7 +46,8 @@ export default function Home() {
       <main className={`${styles.main} ${inter.className}`}>
         <h1>GitHub Search</h1>
         <Search loadUser={loadUser} />
-        {user && <p>{user.login}</p>}
+        {user && <User {...user} />}
+        {error&& <Error/>}
       </main>
     </>
   );
