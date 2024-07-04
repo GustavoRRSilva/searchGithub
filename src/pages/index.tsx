@@ -15,6 +15,19 @@ export default function Home() {
     const res = await fetch(`https://api.github.com/users/${userName}`);
     const data = await res.json();
     console.log(data);
+
+    //Pegando somente as informações listadas no type
+    const { avatar_url, login, location, followers, following } = data;
+    const userData: UserProps = {
+      avatar_url,
+      login,
+      location,
+      followers,
+      following,
+    };
+
+    setUser(userData);
+    console.log(userData);
   };
   return (
     <>
@@ -27,6 +40,7 @@ export default function Home() {
       <main className={`${styles.main} ${inter.className}`}>
         <h1>GitHub Search</h1>
         <Search loadUser={loadUser} />
+        {user && <p>{user.login}</p>}
       </main>
     </>
   );
